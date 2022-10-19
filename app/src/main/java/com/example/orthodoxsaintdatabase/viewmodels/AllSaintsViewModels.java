@@ -15,7 +15,8 @@ public class AllSaintsViewModels extends ViewModel {
         allSaintsRepositories = new AllSaintsRepositories();
     }
 
-    public LiveData<GetSaints> getAllSaints(){
-        return allSaintsRepositories.getAllSaints();
+    public LiveData<GetSaints> getAllSaints(int ID){
+        ID = 42;
+        return allSaintsRepositories.getAllSaints(ID);
     }
 }

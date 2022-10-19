@@ -26,10 +26,12 @@ public class AllSaintsRepositories {
         apiService = ApiClient.getRetrofit().create(ApiService.class);
     }
 
-    public LiveData<GetSaints> getAllSaints(){
+    public LiveData<GetSaints> getAllSaints(int ID){
+        ID = 42;
         MutableLiveData<GetSaints> data = new MutableLiveData<>();
+        String test = data.toString();
         if(data != null){
-            apiService.getAllSaints().enqueue(new Callback<GetSaints>() {
+            apiService.getAllSaints(ID).enqueue(new Callback<GetSaints>() {
 
                 @Override
                 public void onResponse(@NonNull Call<GetSaints> call, @NonNull Response<GetSaints> response) {
@@ -39,6 +41,7 @@ public class AllSaintsRepositories {
                 @Override
                 public void onFailure(@NonNull Call<GetSaints> call, @NonNull Throwable t) {
                     data.setValue(null);
+                    //Toast.makeText(context, "Vlerat vine null", Toast.LENGTH_SHORT).show();
                 }
             });
         }else{
