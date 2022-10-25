@@ -12,7 +12,7 @@
         android:text="Welcome to EMS"
         app:layout_constraintBottom_toBottomOf="parent"
         android:textSize="15sp"
-        android:textColor="@color/black"
+        android:textColor="?android:textColorPrimary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
@@ -66,4 +66,21 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textPassword"
         app:layout_constraintVertical_bias="0.137" />
+
+    <TextView
+        android:id="@+id/txtforgot"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Forgot Password"
+        android:textAlignment="center"
+        android:textColor="?android:textColorPrimary"
+        android:textSize="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.673"
+        android:layout_marginLeft="48dp"
+        android:layout_marginRight="48dp"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

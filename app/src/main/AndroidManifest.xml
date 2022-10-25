@@ -38,6 +38,8 @@
         <!--android:theme="@style/Theme.SplashScreen"-->
         <activity android:name=".Activity.MainActivity"/>
 
+        <activity android:name=".fragment.SettingsFragment"/>
+
     </application>
 
 </manifest>

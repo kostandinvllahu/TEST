@@ -1,37 +1,46 @@
 package com.example.orthodoxsaintdatabase.Activity;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.RecyclerView;
+import static com.example.orthodoxsaintdatabase.Activity.LoginActivity.SHARED_PREFS;
+import static com.example.orthodoxsaintdatabase.Activity.LoginActivity.TEXT;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.MultiAutoCompleteTextView;
+import android.widget.TextView;
 import android.widget.Toast;
-
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.orthodoxsaintdatabase.R;
-import com.example.orthodoxsaintdatabase.SplashScreen.SplashScreenActivity;
-import com.example.orthodoxsaintdatabase.models.GetSaints;
-import com.example.orthodoxsaintdatabase.viewmodels.AllSaintsViewModels;
+import com.example.orthodoxsaintdatabase.fragment.SettingsFragment;
+import com.example.orthodoxsaintdatabase.models.GetValues;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
-    private AllSaintsViewModels viewModels;
+    SharedPreferences sharedPreferences;
     Button btnLogout, btnSend;
     EditText receiverEmail, senderEmail, subject, header;
+    TextView emailCounter;
     MultiAutoCompleteTextView message;
+    ImageView settings;
+    int key = 0;
+    String ID;
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,45 +53,60 @@ public class MainActivity extends AppCompatActivity {
         subject = findViewById(R.id.subject);
         header = findViewById(R.id.header);
         message = findViewById(R.id.message);
-        viewModels = new ViewModelProvider(this).get(AllSaintsViewModels.class);
+        settings = findViewById(R.id.settings);
+        emailCounter = findViewById(R.id.emailCounter);
+        sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
+        ID = sharedPreferences.getString(TEXT,"");
+        if(Integer.valueOf(emailCounter.getText().toString()) == 0){
+            btnSend.setEnabled(false);
+        }
+        getAccountKey(ID);
+        trialEmails(key);
+
 
         btnLogout.setOnClickListener(view -> {
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
             finish();
         });
 
+        settings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(MainActivity.this, SettingsFragment.class);
+                startActivity(i);
+            }
+        });
+
         btnSend.setOnClickListener(view -> {
             String url = "https://orthodoxsaintdatabase.tech/APIemailme.php";
             StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
-                    new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String response) {
-                            switch (response.trim()){
-                                case "1":
-                                    receiverEmail.setText("");
-                                    senderEmail.setText("");
-                                    subject.setText("");
-                                    header.setText("");
-                                    message.setText("");
-                                    Toast.makeText(MainActivity.this, "Email sent succeesfully", Toast.LENGTH_SHORT).show();
-                                    break;
-                                case "2":
-                                    Toast.makeText(MainActivity.this, "Email failed to send!", Toast.LENGTH_LONG).show();
-                                    break;
-                                case "4":
-                                    Toast.makeText(MainActivity.this, "Fill the missing fields", Toast.LENGTH_SHORT).show();
-                            }
+                    response -> {
+                        switch (response.trim()){
+                            case "1":
+                                receiverEmail.setText("");
+                                senderEmail.setText("");
+                                subject.setText("");
+                                header.setText("");
+                                message.setText("");
+                                Toast.makeText(MainActivity.this, "Email sent succeesfully", Toast.LENGTH_SHORT).show();
+                                countEmails();
+                                break;
+                            case "2":
+                                Toast.makeText(MainActivity.this, "Email failed to send!", Toast.LENGTH_LONG).show();
+                                break;
+                            case "442":
+                                receiverEmail.setError("Fill receiver email");
+                                senderEmail.setError("Fill sender email");
+                                subject.setError("Fill subject");
+                                header.setError("Fill header");
+                                message.setError("Fill message");
+                                Toast.makeText(MainActivity.this, "Fill the missing fields", Toast.LENGTH_SHORT).show();
                         }
                     },
-                    new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            Toast.makeText(MainActivity.this, error.toString(), Toast.LENGTH_SHORT).show();
-                        }
-                    }){
+                    error -> Toast.makeText(MainActivity.this, error.toString(), Toast.LENGTH_SHORT).show()){
                 @Override
                 protected Map<String, String> getParams(){
-                    Map<String,String>params = new HashMap<String, String>();
+                    Map<String,String>params = new HashMap<>();
                     params.put("email", receiverEmail.getText().toString());
                     params.put("sender",senderEmail.getText().toString());
                     params.put("subject", subject.getText().toString());
@@ -96,5 +120,56 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
+    private void trialEmails(int key){
+        /**
+         * vlera key do merret me api nga cloud qe do thot nqs eshte trial ose jo
+         * nqs eshte trial do vazhdoj te dali ky popup, perndryshe nuk do shfaqet fare.
+         * */
+        switch (key){
+            case 1:
+                //nothing happens
+                break;
+            case 0:
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Trial account");
+                builder.setMessage("This is a trial, you are given " + emailCounter.getText().toString() +" emails to send for free." +
+                        "If you want more emails please check out our premioum plans." +
+                        "Thank you for using EMS!").setNegativeButton("OK", (dialog, id) -> {
+
+                        });
+                builder.setPositiveButton("Go Premium", (dialogInterface, i) -> {
+                    /**
+                     *  te hapet paypal online ku te bej pagese me karte
+                     *  dhe pasi te kene ardhur leket te behet verifikim dhe
+                     *  te dergohen creditet.
+                     */
+
+                });
+                builder.create();
+                builder.show();
+                break;
+        }
+    }
+
+    private void getAccountKey(String ID){
+        /**
+         * ketu do behet nje servis qe do coj request user ID dhe do marri mbrapsht
+         * accountType nqs eshte trial ose premium.
+         * Ne baze te accountType do dali popup ose jo
+         * dhe vlera qe do vij do futet ne int Key qe i kalohet trialEmails
+         * nqs nuk eshte trial do merret shuma e email qe ka blere dhe do kalohet te
+         * countEmails si vlere.
+         * */
+    }
+
+    private void countEmails(){
+  /**
+   *  sa here do behet e sukseshme do dergohet nje request
+   *  ne service qe do bej -1 email credit
+   *  deri sa te mbarojne creditet*/
+
+    }
+
 
 }
