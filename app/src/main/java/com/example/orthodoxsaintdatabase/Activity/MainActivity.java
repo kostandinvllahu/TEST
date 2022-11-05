@@ -1,5 +1,6 @@
 package com.example.orthodoxsaintdatabase.Activity;
 
+import static com.example.orthodoxsaintdatabase.Activity.LoginActivity.CREDIT;
 import static com.example.orthodoxsaintdatabase.Activity.LoginActivity.SHARED_PREFS;
 import static com.example.orthodoxsaintdatabase.Activity.LoginActivity.TEXT;
 
@@ -36,8 +37,8 @@ public class MainActivity extends AppCompatActivity {
     TextView emailCounter;
     MultiAutoCompleteTextView message;
     ImageView settings;
-    int key = 0;
     String ID;
+    String CREDITS;
 
 
 
@@ -57,11 +58,13 @@ public class MainActivity extends AppCompatActivity {
         emailCounter = findViewById(R.id.emailCounter);
         sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
         ID = sharedPreferences.getString(TEXT,"");
-        if(Integer.valueOf(emailCounter.getText().toString()) == 0){
+        CREDITS = sharedPreferences.getString(CREDIT,"");
+        emailCounter.setText(CREDITS);
+        if(emailCounter.getText().equals(" 0")){
             btnSend.setEnabled(false);
+            trialEmails();
         }
-        getAccountKey(ID);
-        trialEmails(key);
+       // getAccountKey(ID);
 
 
         btnLogout.setOnClickListener(view -> {
@@ -121,24 +124,20 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void trialEmails(int key){
+    private void trialEmails(){
         /**
          * vlera key do merret me api nga cloud qe do thot nqs eshte trial ose jo
          * nqs eshte trial do vazhdoj te dali ky popup, perndryshe nuk do shfaqet fare.
          * */
-        switch (key){
-            case 1:
-                //nothing happens
-                break;
-            case 0:
+
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("Trial account");
-                builder.setMessage("This is a trial, you are given " + emailCounter.getText().toString() +" emails to send for free." +
-                        "If you want more emails please check out our premioum plans." +
+                builder.setTitle("ERROR!");
+                builder.setMessage("You have spent all your credit. Total credit left is: " + emailCounter.getText().toString() +" ." +
+                        "If you want more emails please purchase more for $1 = 1 credit." +
                         "Thank you for using EMS!").setNegativeButton("OK", (dialog, id) -> {
 
                         });
-                builder.setPositiveButton("Go Premium", (dialogInterface, i) -> {
+                builder.setPositiveButton("Buy credit", (dialogInterface, i) -> {
                     /**
                      *  te hapet paypal online ku te bej pagese me karte
                      *  dhe pasi te kene ardhur leket te behet verifikim dhe
@@ -148,20 +147,18 @@ public class MainActivity extends AppCompatActivity {
                 });
                 builder.create();
                 builder.show();
-                break;
-        }
     }
 
-    private void getAccountKey(String ID){
-        /**
-         * ketu do behet nje servis qe do coj request user ID dhe do marri mbrapsht
-         * accountType nqs eshte trial ose premium.
-         * Ne baze te accountType do dali popup ose jo
-         * dhe vlera qe do vij do futet ne int Key qe i kalohet trialEmails
-         * nqs nuk eshte trial do merret shuma e email qe ka blere dhe do kalohet te
-         * countEmails si vlere.
-         * */
-    }
+//    private void getAccountKey(String ID){
+//        /**
+//         * ketu do behet nje servis qe do coj request user ID dhe do marri mbrapsht
+//         * accountType nqs eshte trial ose premium.
+//         * Ne baze te accountType do dali popup ose jo
+//         * dhe vlera qe do vij do futet ne int Key qe i kalohet trialEmails
+//         * nqs nuk eshte trial do merret shuma e email qe ka blere dhe do kalohet te
+//         * countEmails si vlere.
+//         * */
+//    }
 
     private void countEmails(){
   /**

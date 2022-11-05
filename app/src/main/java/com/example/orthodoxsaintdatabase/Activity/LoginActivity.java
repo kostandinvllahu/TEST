@@ -35,6 +35,7 @@ public class LoginActivity extends AppCompatActivity {
     GetValues values = new GetValues();
     public static final String SHARED_PREFS = "sharedPrefs";
     public static final String TEXT = "text";
+    public static final String CREDIT = "credit";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -174,6 +175,35 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+    private void getCredit(String user){
+        String url = "https://orthodoxsaintdatabase.tech/APIgetCredit.php";
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS,MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putString(CREDIT, response);
+                        editor.apply();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(LoginActivity.this, error.toString(), Toast.LENGTH_SHORT).show();
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("USERNAME", user);
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(LoginActivity.this);
+        requestQueue.add(stringRequest);
+    }
+
     private void Login(){
         String url = "https://orthodoxsaintdatabase.tech/APIuserVerificationLogin.php";
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
@@ -182,7 +212,7 @@ public class LoginActivity extends AppCompatActivity {
                     public void onResponse(String response) {
                         switch (response.trim()) {
                             case "1":
-
+                                getCredit(String.valueOf(username.getText()));
                                 SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS,MODE_PRIVATE);
                                 SharedPreferences.Editor editor = sharedPreferences.edit();
                                 editor.putString(TEXT, username.getText().toString());
