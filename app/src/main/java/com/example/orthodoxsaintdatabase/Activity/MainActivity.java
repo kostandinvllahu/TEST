@@ -20,6 +20,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.orthodoxsaintdatabase.R;
@@ -39,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     ImageView settings;
     String ID;
     String CREDITS;
+    String removeOne = "1";
 
 
 
@@ -60,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
         ID = sharedPreferences.getString(TEXT,"");
         CREDITS = sharedPreferences.getString(CREDIT,"");
         emailCounter.setText(CREDITS);
-        if(emailCounter.getText().equals(" 0")){
+        if(emailCounter.getText().toString().trim().equals("0")){
             btnSend.setEnabled(false);
             trialEmails();
         }
@@ -93,6 +96,13 @@ public class MainActivity extends AppCompatActivity {
                                 message.setText("");
                                 Toast.makeText(MainActivity.this, "Email sent succeesfully", Toast.LENGTH_SHORT).show();
                                 countEmails();
+                                try{
+                                   int counter = Integer.parseInt(emailCounter.getText().toString().trim());
+                                       counter -= 1;
+                                       emailCounter.setText(String.valueOf(counter));
+                                }catch (Exception ex){
+                                    Toast.makeText(MainActivity.this, ex.toString(), Toast.LENGTH_LONG).show();
+                                }
                                 break;
                             case "2":
                                 Toast.makeText(MainActivity.this, "Email failed to send!", Toast.LENGTH_LONG).show();
@@ -161,10 +171,33 @@ public class MainActivity extends AppCompatActivity {
 //    }
 
     private void countEmails(){
-  /**
-   *  sa here do behet e sukseshme do dergohet nje request
-   *  ne service qe do bej -1 email credit
-   *  deri sa te mbarojne creditet*/
+        String url = "https://orthodoxsaintdatabase.tech/APIgetCredit.php";
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS,MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putString(CREDIT, response);
+                        editor.apply();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(MainActivity.this, error.toString(), Toast.LENGTH_SHORT).show();
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("USER", ID);
+                params.put("CREDIT", removeOne);
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(MainActivity.this);
+        requestQueue.add(stringRequest);
 
     }
 
