@@ -4,12 +4,14 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.volley.Request;
@@ -26,13 +28,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity {
-    public String response ="";
-    EditText username, password;
-    Button btnLogin;
-    TextView txtforgot;
+
+    EditText username, password, txtUsername, txtEmail, txtPassword;
+    Button btnLogin, btnCreate;
+    TextView txtforgot,txtRegister;
     Boolean verify = false;
     Boolean click = false;
-    GetValues values = new GetValues();
+
     public static final String SHARED_PREFS = "sharedPrefs";
     public static final String TEXT = "text";
     public static final String CREDIT = "credit";
@@ -46,6 +48,7 @@ public class LoginActivity extends AppCompatActivity {
         username = findViewById(R.id.textUsername);
         password = findViewById(R.id.textPassword);
         txtforgot = findViewById(R.id.txtforgot);
+        txtRegister = findViewById(R.id.register);
         txtforgot.setOnClickListener(view -> {
             if(!verify){
                 verify = true;
@@ -58,6 +61,30 @@ public class LoginActivity extends AppCompatActivity {
         });
         btnLogin.setOnClickListener(view -> {
             Login();
+        });
+
+        txtRegister.setOnClickListener(v -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+            AlertDialog dialog;
+            final View createAccount = getLayoutInflater().inflate(R.layout.register, null);
+            txtUsername = (EditText) createAccount.findViewById(R.id.txtUsername);
+            txtEmail = (EditText) createAccount.findViewById(R.id.txtEmail);
+            txtPassword = (EditText) createAccount.findViewById(R.id.txtPassword);
+            btnCreate = (Button) createAccount.findViewById(R.id.btnCreate);
+            builder.setView(createAccount);
+            builder.setTitle("Create Account");
+            dialog = builder.create();
+            dialog.show();
+//            WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
+//            layoutParams.copyFrom(dialog.getWindow().getAttributes());
+//            layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT;
+//            layoutParams.height = WindowManager.LayoutParams.MATCH_PARENT;
+//            dialog.getWindow().setAttributes(layoutParams);;
+
+            btnCreate.setOnClickListener(v1 -> {
+                //API qe krijon llogari te re
+            });
+
         });
     }
 

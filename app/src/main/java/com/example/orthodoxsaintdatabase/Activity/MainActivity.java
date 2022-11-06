@@ -63,10 +63,7 @@ public class MainActivity extends AppCompatActivity {
         ID = sharedPreferences.getString(TEXT,"");
         CREDITS = sharedPreferences.getString(CREDIT,"");
         emailCounter.setText(CREDITS);
-        if(emailCounter.getText().toString().trim().equals("0")){
-            btnSend.setEnabled(false);
-            trialEmails();
-        }
+        popup();
        // getAccountKey(ID);
 
 
@@ -96,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
                                 message.setText("");
                                 Toast.makeText(MainActivity.this, "Email sent succeesfully", Toast.LENGTH_SHORT).show();
                                 countEmails();
+                                popup();
                                 try{
                                    int counter = Integer.parseInt(emailCounter.getText().toString().trim());
                                        counter -= 1;
@@ -198,7 +196,13 @@ public class MainActivity extends AppCompatActivity {
         };
         RequestQueue requestQueue = Volley.newRequestQueue(MainActivity.this);
         requestQueue.add(stringRequest);
+    }
 
+    private void popup(){
+        if(emailCounter.getText().toString().trim().equals("0")){
+            btnSend.setEnabled(false);
+            trialEmails();
+        }
     }
 
 
