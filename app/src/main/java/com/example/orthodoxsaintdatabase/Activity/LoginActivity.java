@@ -83,9 +83,64 @@ public class LoginActivity extends AppCompatActivity {
 
             btnCreate.setOnClickListener(v1 -> {
                 //API qe krijon llogari te re
+                if(txtUsername.getText().toString().equals("")){
+                    txtUsername.setError("Insert username");
+                    return;
+                }
+
+                if(txtEmail.getText().toString().equals("")){
+                    txtEmail.setError("Insert email");
+                    return;
+                }
+
+                if(txtPassword.getText().toString().equals("")){
+                    txtPassword.setError("Insert password");
+                    return;
+                }
+                createAccount(txtUsername.getText().toString(), txtEmail.getText().toString(),txtPassword.getText().toString());
             });
 
         });
+    }
+
+    private void createAccount(String Username, String Email, String Password){
+        String url = "https://orthodoxsaintdatabase.tech/APIregister.php";
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        switch (response.trim()){
+                            case "1":
+                                txtEmail.setError("Email already in use!");
+                                Toast.makeText(LoginActivity.this,"This email is already in use!", Toast.LENGTH_LONG).show();
+                                break;
+                            case "2":
+                                txtUsername.setError("Username is taken!");
+                                Toast.makeText(LoginActivity.this, "This username is taken!", Toast.LENGTH_LONG).show();
+                                break;
+                            case "3":
+                                Toast.makeText(LoginActivity.this, "Account created successfully!", Toast.LENGTH_LONG).show();
+                                break;
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(LoginActivity.this, error.toString(), Toast.LENGTH_SHORT).show();
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<String, String>();
+                    params.put("USERNAME", Username);
+                    params.put("EMAIL", Email);
+                    params.put("PASSWORD", Password);
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(LoginActivity.this);
+        requestQueue.add(stringRequest);
     }
 
     private void verifyClick(int option) {
@@ -210,6 +265,7 @@ public class LoginActivity extends AppCompatActivity {
                     public void onResponse(String response) {
                         SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS,MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.remove(CREDIT);
                         editor.putString(CREDIT, response);
                         editor.apply();
                     }

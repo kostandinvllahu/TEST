@@ -29,6 +29,7 @@
         android:src="@drawable/settings"
         android:layout_marginLeft="340dp"
         android:layout_marginRight="10dp"
+        app:tint="?android:textColorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"

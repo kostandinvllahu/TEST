@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -146,11 +147,9 @@ public class MainActivity extends AppCompatActivity {
 
                         });
                 builder.setPositiveButton("Buy credit", (dialogInterface, i) -> {
-                    /**
-                     *  te hapet paypal online ku te bej pagese me karte
-                     *  dhe pasi te kene ardhur leket te behet verifikim dhe
-                     *  te dergohen creditet.
-                     */
+                    Uri uri = Uri.parse("https://www.fiverr.com/kostandinvllahu/give-you-email-credit"); // missing 'http://' will cause crashed
+                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                    startActivity(intent);
 
                 });
                 builder.create();
